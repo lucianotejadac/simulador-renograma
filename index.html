@@ -1,0 +1,63 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Simulador de renograma — Cintigrama renal dinámico</title><link rel="stylesheet" href="renal.css?v=1"><link rel="stylesheet" href="renograma.css?v=1"></head><body>
+<main class="window"><header class="titlebar"><span>▦ Simulador de renograma — Cintigrama renal dinámico</span><span class="captionbuttons" aria-hidden="true">▁ ▢</span></header>
+<nav class="menubar"><button id="nuevo">Archivo · Nuevo caso</button><button id="abrirProyecto">Abrir proyecto…</button><button id="tutorialBoton" aria-pressed="true">Tutorial</button><label>Colores <select id="paleta"><option value="grisInv">Gris invertido</option><option value="gris">Escala de grises</option><option value="hot">Hot iron</option></select></label><label>Techo <input id="techo" type="range" min="10" max="100" value="100"> <output id="techoValor">100 %</output></label><button id="ayuda">Ayuda</button><span class="derecha">Uso educativo · Los DICOM no salen del navegador</span></nav>
+<div class="steps" aria-label="Pasos"><button data-step="0">1. Cargar el caso</button><button data-step="1">2. Fases y mosaicos</button><button data-step="2">3. Regiones</button><button data-step="3">4. Curvas y parámetros</button><button data-step="4">5. Exportar</button></div>
+<div class="workspace" id="workspace">
+<aside id="lateral">
+ <fieldset><legend>Caso de trabajo</legend><strong id="casoNombre">Sin caso</strong><p id="casoInfo" class="notice">Elige el caso en el tutorial y carga los archivos de tu carpeta.</p></fieldset>
+ <fieldset id="panelMosaicos" hidden><legend>Suma temporal</legend>
+  <label>Angiográfica: imágenes de <select id="angioSeg"><option value="1">1 s</option><option value="2">2 s</option><option value="3">3 s</option><option value="5">5 s</option><option value="10">10 s</option></select> durante el primer minuto</label>
+  <label>Excretora: imágenes de <select id="excrMin"><option value="0.25">15 s</option><option value="0.5">30 s</option><option value="1">1 min</option><option value="2">2 min</option></select></label>
+  <p class="notice">Cada imagen del mosaico suma frames consecutivos. Elige la agrupación que corresponde al protocolo: 3 s en la fase angiográfica y 1 minuto en la excretora.</p>
+ </fieldset>
+ <fieldset id="panelHerramientas" hidden><legend>Regiones de interés</legend>
+  <div class="herramientas">
+   <p class="notice">Se dibujan sobre la imagen suma de los minutos 1 a 3, donde el parénquima se ve mejor.</p>
+   <label>Región <select id="objetivo"><option value="izq">Riñón izquierdo (rojo)</option><option value="der">Riñón derecho (verde)</option><option value="aorta">Aorta (magenta)</option></select></label>
+   <button id="herrIso" aria-pressed="true">Isocontorno · clic en el riñón</button>
+   <label>Umbral <input id="umbral" type="range" min="20" max="80" value="40"> <output id="umbralValor">40 %</output> del máximo local</label>
+   <button id="herrPoli" aria-pressed="false">Polígono · clic por vértice</button>
+   <button id="cerrarPoli" disabled>Cerrar polígono</button>
+   <button id="fondoAuto">Fondo perirrenal automático</button>
+   <button id="borrarRoi">Borrar la región elegida</button>
+   <button id="borrarTodo">Borrar todas las regiones</button>
+  </div>
+  <p class="notice"><span class="leyenda" style="border-color:#e00"></span>Riñón izq. <span class="leyenda" style="border-color:#0a0"></span>Riñón der. <span class="leyenda" style="border-color:#dd0"></span>Fondo izq. <span class="leyenda" style="border-color:#00c"></span>Fondo der. <span class="leyenda" style="border-color:#c0c"></span>Aorta</p>
+ </fieldset>
+ <fieldset id="panelCurvas" hidden><legend>Parámetros</legend>
+  <label>Furosemida en el minuto <input id="furosemida" type="number" min="0" max="30" step="1" value="20"></label>
+  <label>Función diferencial entre <input id="ventanaIni" type="number" min="0.5" max="5" step="0.5" value="1"> y <input id="ventanaFin" type="number" min="1" max="6" step="0.5" value="2.5"> min</label>
+  <label><input id="restarFondo" type="checkbox" checked> Restar fondo perirrenal</label>
+  <label><input id="porSegundo" type="checkbox" checked> Expresar en cuentas por segundo</label>
+  <p class="notice">La función diferencial se calcula con el área bajo la curva corregida entre los dos tiempos, antes de que el trazador llegue a la pelvis.</p>
+ </fieldset>
+</aside>
+<article>
+ <section id="step0" class="step"><h1>Cargar el caso</h1><p>Selecciona los archivos DICOM de tu carpeta del caso: la dinámica de 176 frames y la estática postmiccional. En el caso 7 hay además una dinámica anterior.</p>
+  <div class="fila"><label class="filelabel">Archivos <input id="archivos" type="file" multiple></label><label class="filelabel">O carpeta <input id="carpeta" type="file" webkitdirectory multiple></label></div>
+  <ul id="listaArchivos" class="listaArchivos"></ul><p id="cargaInfo" class="notice">Aún no hay archivos.</p>
+  <section id="infoAdquisicion" hidden><h2>Información de la adquisición</h2><p class="notice">Haz clic en un archivo de la lista para ver sus datos de cabecera.</p><div id="infoTabla"></div></section>
+ </section>
+ <section id="step1" class="step" hidden><h1>Fases y mosaicos</h1><p>La dinámica tiene dos fases. Reconócelas en la tabla y arma los dos mosaicos del equipo: la fase angiográfica con imágenes de 3 segundos y la fase excretora con imágenes de 1 minuto, más la postmiccional.</p>
+  <div id="tablaFases"></div>
+  <h2>Fase angiográfica <span id="angioTitulo" class="notice"></span></h2><div id="mosaicoAngio" class="mosaico"></div>
+  <h2>Fase excretora <span id="excrTitulo" class="notice"></span></h2><div id="mosaicoExcr" class="mosaico"></div>
+  <div id="postmiccional" class="cuantif"></div>
+ </section>
+ <section id="step2" class="step" hidden><h1>Regiones de interés</h1><p>Dibuja el riñón izquierdo, el derecho y la aorta sobre la imagen suma de los minutos 1 a 3. El fondo perirrenal se genera solo, como media luna lateral. Puedes borrarlo y regenerarlo.</p><div id="roiArea" class="cuantif"></div></section>
+ <section id="step3" class="step" hidden><h1>Curvas y parámetros</h1><p>El renograma de 30 minutos en cuentas por segundo con el fondo restado, la curva de flujo del primer minuto y la tabla de parámetros.</p>
+  <div class="curvas"><section class="imagewindow"><h2><b>Renograma</b><span>cuentas por segundo · 30 min</span></h2><canvas id="curvaRenal" width="900" height="420"></canvas></section><section class="imagewindow"><h2><b>Flujo</b><span>primeros 60 s</span></h2><canvas id="curvaFlujo" width="900" height="300"></canvas></section></div>
+  <div id="tablaParametros"></div>
+  <div class="fila" style="margin-top:8px"><button id="confirmar" disabled>Confirmar resultados</button><span id="confirmadoInfo" class="notice"></span></div>
+ </section>
+ <section id="step4" class="step" hidden><h1>Exportar</h1><p>Descarga las tres páginas en PNG y guarda el proyecto para poder retomarlo.</p><div class="fila"><button id="pngAngio" disabled>PNG · fase angiográfica</button><button id="pngExcr" disabled>PNG · fase excretora</button><button id="pngCurvas" disabled>PNG · curvas y parámetros</button><button id="guardarProyecto" disabled>Guardar proyecto…</button></div><p id="exportInfo" class="notice"></p><div id="previsualizacion"></div></section>
+ <div id="vacio" class="empty inset"><div>▦</div><strong>Área de imágenes</strong><p>Carga los archivos del caso para empezar.</p></div>
+ <footer class="actions"><button id="prev" disabled>◀ Anterior</button><button id="next">Siguiente ▶</button></footer>
+</article>
+<section id="tutorial" class="tutorial" aria-label="Tutorial" hidden></section>
+</div>
+<footer class="statusbar"><span id="status" role="status" aria-live="polite">Listo.</span><span id="posicion">Paso 1 de 5</span></footer></main>
+<footer class="taskbar"><button id="inicio">▦ Inicio</button><span class="task">Simulador de renograma</span><span class="clock">Laboratorio educativo</span></footer>
+<dialog id="acerca"><header class="titlebar">Acerca del simulador de renograma</header><div><h2>Procesar un cintigrama renal dinámico</h2><p>Carga la dinámica MAG3 de tu caso, reconoce sus fases, arma los mosaicos angiográfico y excretor, dibuja regiones renales, de fondo y aórtica, y obtén las curvas de actividad-tiempo con función diferencial, tiempo al máximo y tiempo medio, como lo hace el equipo. Al terminar, compara con el informe.</p><p>Uso docente. No es un programa validado para diagnóstico. Los archivos se leen en tu navegador y no se envían a ningún servidor. Incluye dicom-parser (MIT).</p><button id="cerrarAcerca">Aceptar</button></div></dialog>
+<input id="proyectoInput" type="file" accept=".renalproject,application/json" hidden>
+<script src="vendor/dicomParser.min.js"></script><script src="renal-core.js?v=1"></script><script src="renal-tutorial.js?v=1"></script><script src="renograma-casos.js?v=1"></script><script src="renograma-app.js?v=1"></script></body></html>

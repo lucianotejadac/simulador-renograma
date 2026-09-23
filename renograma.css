@@ -1,0 +1,11 @@
+/* Estilos propios del simulador de renograma: mosaicos y curvas. */
+.mosaico{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px;background:#808080;padding:3px;margin:6px 0}
+.mosaico figure{margin:0;background:#c0c0c0;min-width:0}
+.mosaico canvas{display:block;width:100%;background:#fff;image-rendering:pixelated}
+.mosaico figcaption{font-size:10px;text-align:center;padding:1px 0;background:#c8c8e8}
+.mosaico figure.vacio canvas{background:#eee}
+.mosaico figure.furosemida figcaption{background:#ffe08a;font-weight:bold}
+.curvas{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.curvas canvas{width:100%;height:auto;background:#fff;image-rendering:auto}
+table.fases td.actual{background:#ffffd0}
+@media(max-width:900px){.mosaico{grid-template-columns:repeat(4,minmax(0,1fr))}}
