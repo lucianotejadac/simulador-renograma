@@ -276,7 +276,7 @@ function agrupacionOk(){return S.angioSeg===RENO_PROTOCOLO.angiograficoS&&S.excr
 function reiniciar(conCaso=true){Object.assign(S,{archivos:[],ignorados:[],seleccion:null,rois:{},poligono:[],confirmado:false,exportados:{angio:false,excr:false,curvas:false},proyectoGuardado:false,infoVista:new Set(),mosaicosVistos:false,angioSeg:1,excrMin:.25,furosemidaMin:20});sumas.clear();suaveCache=null;sincronizarControles();$('archivos').value='';$('carpeta').value='';$('previsualizacion').replaceChildren();$('exportInfo').textContent='';if(conCaso){navegar(0);refrescar();}}
 /* ---------- tutorial ---------- */
 function pasosTutorial(n,caso){
- const nombreEst=Object.entries(RENO_ESTUDIANTES).find(([,l])=>l.includes(n))?.[0];const carpeta=nombreEst?'«Renograma '+nombreEst+' › Caso '+n+'»':'la carpeta del caso '+n;
+ const carpeta='la carpeta «Caso '+n+'» dentro de tu carpeta Renograma';
  const dosDet=!!caso.archivos.dinamicaAnterior;
  return [
   {titulo:'Cargar la dinámica y la postmiccional',pantalla:0,resaltar:'archivos',
@@ -336,7 +336,7 @@ function cierreTutorial(n,caso){
 }
 /* ---------- arranque ---------- */
 function iniciar(){
- tutorial=RenalTutorial.crear({contenedor:$('tutorial'),workspace:$('workspace'),boton:$('tutorialBoton'),titulo:'Tutorial renograma',clave:'renogramaTutorial',casos:RENO_CASOS,estudiantes:RENO_ESTUDIANTES,pasos:pasosTutorial,cierre:cierreTutorial,preguntasOrales:RENO_PREGUNTAS_ORALES,onCaso:n=>{S.caso=n;refrescar();},navegar:i=>{if(i!==S.paso&&S.archivos.length)navegar(i);}});
+ tutorial=RenalTutorial.crear({contenedor:$('tutorial'),workspace:$('workspace'),boton:$('tutorialBoton'),titulo:'Tutorial renograma',clave:'renogramaTutorial',casos:RENO_CASOS,pasos:pasosTutorial,cierre:cierreTutorial,preguntasOrales:RENO_PREGUNTAS_ORALES,onCaso:n=>{S.caso=n;refrescar();},navegar:i=>{if(i!==S.paso&&S.archivos.length)navegar(i);}});
  S.caso=tutorial.caso;
  $('archivos').onchange=e=>cargar([...e.target.files]);$('carpeta').onchange=e=>cargar([...e.target.files]);
  $('paleta').onchange=e=>{S.paleta=e.target.value;refrescar();};$('techo').oninput=e=>{S.techo=Number(e.target.value)/100;$('techoValor').textContent=e.target.value+' %';refrescar();};

@@ -5,7 +5,6 @@
 // Puntos porcentuales de diferencia aceptable frente al informe. Mayor que en DMSA: a 3,3 mm de
 // pixel la funcion diferencial depende del fondo y de la ventana temporal tanto como de la region.
 const RENO_TOLERANCIA=10;
-const RENO_ESTUDIANTES={Juan:[1,2],Magdalena:[3,4],Benjamin:[5,6],Diego:[7,8],Sofia:[9,10]};
 // Protocolo comun a los diez casos: 60 frames de 1 s y 116 de 15 s, 30 minutos, detector posterior.
 const RENO_PROTOCOLO={fases:[{frames:60,duracionMs:1000},{frames:116,duracionMs:15000}],angiograficoS:3,excretorMin:1,ventanaFuncion:[60,150]};
 const RENO_PREGUNTAS_ORALES=[

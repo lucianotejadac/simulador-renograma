@@ -19,7 +19,6 @@ const RenalTutorial=(()=>{
   }
   function setCaso(n){estado.caso=cfg.casos[n]?Number(n):null;guardar();if(cfg.onCaso)cfg.onCaso(estado.caso);render();}
   function abrir(v=true){estado.abierto=v;guardar();render();}
-  function estudianteDe(n){for(const [nombre,lista] of Object.entries(cfg.estudiantes||{}))if(lista.includes(Number(n)))return nombre;return null;}
   function render(){
    cont.hidden=!estado.abierto;if(ws)ws.classList.toggle('conTutorial',estado.abierto);if(boton)boton.setAttribute('aria-pressed',String(estado.abierto));
    if(!estado.abierto){resaltar(null);return;}
@@ -29,7 +28,6 @@ const RenalTutorial=(()=>{
    if(!estado.caso){renderSelector();return;}
    const caso=cfg.casos[estado.caso];
    cont.append(nodo('div',caso.titulo,'tutorialTitulo'));cont.append(nodo('p',caso.resumen,'tutorialResumen'));
-   const est=estudianteDe(estado.caso);if(est)cont.append(nodo('p','Caso asignado a '+est+'. Si no es tu caso, cámbialo abajo.','notice'));
    const clin=nodo('details');clin.open=true;clin.append(nodo('summary','Antecedente clínico'));clin.append(nodo('p',caso.clinica.antecedentes));
    if(caso.clinica.procedimiento){clin.append(nodo('h4','Procedimiento'));clin.append(nodo('p',caso.clinica.procedimiento));}
    clin.append(nodo('p','No tendrás el informe. Al terminar el caso, el simulador mostrará el resultado del informe para que lo compares con el tuyo.','notice'));cont.append(clin);
@@ -66,7 +64,7 @@ const RenalTutorial=(()=>{
   function renderSelector(){
    cont.append(nodo('p','¿Qué caso te asignaron? Elige el número que aparece en el nombre de tu carpeta.'));
    const box=nodo('div',null,'tutorialCasos');
-   Object.entries(cfg.casos).forEach(([n,c])=>{const b=nodo('button');b.type='button';b.append(nodo('strong','Caso '+n));const est=estudianteDe(n);b.append(nodo('span',c.titulo+(est?' · '+est:'')));b.onclick=()=>setCaso(n);box.append(b);});
+   Object.entries(cfg.casos).forEach(([n,c])=>{const b=nodo('button');b.type='button';b.append(nodo('strong','Caso '+n));b.append(nodo('span',c.titulo));b.onclick=()=>setCaso(n);box.append(b);});
    cont.append(box);
    cont.append(nodo('p','El número de caso solo cambia la guía. Los archivos los cargas tú desde tu carpeta; nada se envía a ningún servidor.','notice'));
   }
